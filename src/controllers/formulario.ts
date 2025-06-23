@@ -10,7 +10,13 @@ const formularioController = async (req: Request, res: Response) => {
 
   try {
     const pdfBuffer = await generatePDF(datos);
-    const adjuntos = (req.files?.["adjuntos"] || []) as Express.Multer.File[];
+    const adjuntos = Array.isArray(req.files) // Multer can provide files as array or object
+      ? []
+      : (req.files &&
+          (req.files as { [fieldname: string]: Express.Multer.File[] })[
+            "adjuntos"
+          ]) ||
+        [];
 
     await enviarFormularioDocumint(
       pdfBuffer,

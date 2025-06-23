@@ -405,7 +405,7 @@ export function generatePDF(data: any): Promise<Buffer> {
       },
     };
 
-    const pdfDoc = printer.createPdfKitDocument(docDefinition);
+    const pdfDoc = printer.createPdfKitDocument(docDefinition as any);
     const chunks: Buffer[] = [];
 
     pdfDoc.on("data", (chunk) => chunks.push(chunk));
