@@ -7,7 +7,7 @@ import rateLimit from "express-rate-limit";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const allowedOrigins = ["http://localhost:5173"];
+const allowedOrigins = process.env.ALLOWED_ORIGINS;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
