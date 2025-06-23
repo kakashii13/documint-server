@@ -26,7 +26,7 @@ export function parseFormData(
       continue;
     } catch {
       // No es JSON
-      console.log("Error");
+      // console.log("Error");
     }
 
     // Convierte "true"/"false" a booleano

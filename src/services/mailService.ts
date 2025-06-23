@@ -27,11 +27,17 @@ export async function enviarFormularioDocumint(
     })),
   ];
 
-  return transporter.sendMail({
-    from: `"Documint" <${process.env.MAIL_USER}>`,
-    to: destinatario,
-    subject: "Formulario recibido",
-    text: "Adjuntamos el formulario completo con los archivos enviados.",
-    attachments,
-  });
+  return transporter.sendMail(
+    {
+      from: `"Documint" <${process.env.MAIL_USER}>`,
+      to: destinatario,
+      subject: "Formulario recibido",
+      text: "Adjuntamos el formulario completo con los archivos enviados.",
+      attachments,
+    },
+    (err, info) => {
+      if (err) return console.error(err);
+      console.log("Mensaje enviado:", info.response);
+    }
+  );
 }
