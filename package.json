@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts"
   },
@@ -15,10 +16,13 @@
     "dayjs": "^1.11.13",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "express-rate-limit": "^7.5.1",
+    "helmet": "^8.1.0",
     "multer": "^2.0.1",
     "nodemailer": "^7.0.3",
     "pdf-lib": "^1.17.1",
-    "pdfmake": "^0.2.20"
+    "pdfmake": "^0.2.20",
+    "resend": "^4.6.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
