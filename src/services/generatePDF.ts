@@ -21,7 +21,6 @@ export function generatePDF(data: any): Promise<Buffer> {
     const logoBuffer = fs.readFileSync(logoPath);
     const logoBase64 = logoBuffer.toString("base64");
     const firmaBase64 = data?.firma;
-
     const docDefinition = {
       content: [
         {
@@ -58,7 +57,7 @@ export function generatePDF(data: any): Promise<Buffer> {
               margin: [0, 0, 4, 0],
               width: "auto",
             },
-            { text: String(data.cuil).slice(2, 10) ?? "", width: 60 },
+            { text: data.dni ?? "", width: 60 },
             { text: "Sexo:", bold: true, width: "auto", margin: [0, 0, 4, 0] },
             { text: data.sexo, width: 10 },
           ],
@@ -80,8 +79,6 @@ export function generatePDF(data: any): Promise<Buffer> {
               margin: [0, 0, 4, 0],
             },
             { text: data.estadoCivil ?? "", width: 80, margin: [0, 0, 4, 0] },
-            { text: "CUIL:", bold: true, width: "auto", margin: [0, 0, 4, 0] },
-            { text: data.cuil ?? "", width: 100 },
           ],
           margin: [0, 2],
         },
@@ -126,6 +123,13 @@ export function generatePDF(data: any): Promise<Buffer> {
               margin: [0, 0, 4, 0],
             },
             { text: data.tel2 ?? "", width: 80 },
+            {
+              text: "E-mail:",
+              bold: true,
+              width: "auto",
+              margin: [0, 0, 4, 0],
+            },
+            { text: data.email ?? "", width: 100 },
           ],
           margin: [0, 2],
         },
@@ -150,7 +154,17 @@ export function generatePDF(data: any): Promise<Buffer> {
           ],
           margin: [0, 2],
         },
-
+        {
+          columns: [
+            {
+              text: "Clave fiscal:",
+              bold: true,
+              width: "auto",
+              margin: [0, 0, 4, 0],
+            },
+            { text: data.claveFiscal ?? "", width: 100 },
+          ],
+        },
         {
           columns: [
             {
@@ -291,6 +305,21 @@ export function generatePDF(data: any): Promise<Buffer> {
               margin: [0, 0, 4, 0],
             },
             {
+              text: "Cuáles:",
+              bold: true,
+              width: "auto",
+              margin: [0, 0, 4, 0],
+            },
+            {
+              text: data.operacionesCuales ?? "",
+              width: 150,
+              margin: [0, 0, 4, 0],
+            },
+          ],
+        },
+        {
+          columns: [
+            {
               text: "Toma algún remedio:",
               bold: true,
               width: "auto",
@@ -344,18 +373,34 @@ export function generatePDF(data: any): Promise<Buffer> {
           table: {
             widths: ["*", "*", "*", "*", "*"],
             body: [
-              ["Parentesco", "Nombre", "Edad", "CUIL", "Fecha de Nac"],
+              ["Parentesco", "Nombre", "Edad", "DNI", "Fecha de Nac"],
               ...(data.familiares ?? [])
                 .slice(0, 5)
                 .map((f: any) => [
                   f.parentesco ?? "",
                   f.nombre ?? "",
                   f.edad ?? "",
-                  f.cuil ?? "",
+                  f.dni ?? "",
                   f.fechaNac ?? "",
                 ]),
             ],
           },
+        },
+        {
+          columns: [
+            {
+              text: "Nombre asesor: ",
+              bold: true,
+              width: "auto",
+              margin: [0, 20, 4, 0],
+            },
+            {
+              text: data.asesor ?? "",
+              width: 150,
+              alignment: "left",
+              margin: [0, 20, 4, 0],
+            },
+          ],
         },
         {
           columns: [
