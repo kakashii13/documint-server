@@ -18,11 +18,15 @@ const formularioController = async (req: Request, res: Response) => {
           ]) ||
         [];
 
-    await enviarFormularioDocumint(
-      pdfBuffer,
-      adjuntos,
-      process.env.MAIL_DESTINATION || ""
-    );
+    const destinatariosRaw = process.env.MAIL_DESTINATIONS || "";
+    const destinatarios = destinatariosRaw
+      .split(",")
+      .map((email) => email.trim())
+      .filter(Boolean); // elimina entradas vacías
+
+    const asunto = `Formulario de ${datos.nombre} - ${datos.dni}`;
+
+    await enviarFormularioDocumint(pdfBuffer, adjuntos, destinatarios, asunto);
 
     res.status(200).json({
       message: "PDF generado y enviado por correo",

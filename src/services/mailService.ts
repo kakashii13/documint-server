@@ -13,7 +13,8 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function enviarFormularioDocumint(
   pdf: Buffer,
   adjuntos: ArchivoAdjunto[],
-  destinatario: string
+  destinatarios: string[],
+  asunto: string = "Formulario recibido"
 ) {
   const attachments = [
     {
@@ -29,8 +30,8 @@ export async function enviarFormularioDocumint(
   try {
     const response = await resend.emails.send({
       from: "Documint <no-reply@documint.ar>",
-      to: destinatario,
-      subject: "Formulario recibido",
+      to: destinatarios,
+      subject: asunto,
       text: "Adjuntamos el formulario completo con los archivos enviados.",
       attachments,
     });
