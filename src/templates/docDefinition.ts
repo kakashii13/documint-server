@@ -323,6 +323,17 @@ export const documintDefinition = (
             width: 20,
             margin: [0, 0, 4, 0],
           },
+          {
+            text: "Cuáles:",
+            bold: true,
+            width: "auto",
+            margin: [0, 0, 4, 0],
+          },
+          {
+            text: data.medicamentoCuales ?? "",
+            width: "auto",
+            margin: [0, 0, 4, 0],
+          },
         ],
         margin: [0, 4],
       },
