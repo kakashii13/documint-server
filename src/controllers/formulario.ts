@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { generatePDF } from "../services/generatePDF";
-import { enviarFormularioDocumint } from "../services/mailService";
+import { generatePDF } from "../utils/generatePDF";
+import { enviarFormularioDocumint } from "../utils/mailService";
 import dotenv from "dotenv";
 
 dotenv.config();

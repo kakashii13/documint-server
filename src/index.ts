@@ -1,8 +1,14 @@
 import express from "express";
-import formularioRouter from "./routes/formulario";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
+import { errorManager } from "./middlewares/errorMiddleware";
+// routes imports
+import formularioRouter from "./routes/formulario";
+import usersRouter from "./routes/users";
+import clientsRouter from "./routes/clients";
+import invitationRouter from "./routes/invitation";
+import authRouter from "./routes/auth";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -28,7 +34,13 @@ app.use(
   })
 );
 
+app.use("/", invitationRouter);
+app.use("/", authRouter);
+app.use("/", usersRouter);
+app.use("/", clientsRouter);
 app.use("/", formularioRouter);
+
+app.use(errorManager);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

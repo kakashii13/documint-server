@@ -1,6 +1,8 @@
 // services/mailService.ts
 import { Resend } from "resend";
 import dotenv from "dotenv";
+import { HttpException } from "../services/httpException";
+import { invitationTemplate } from "../templates/invitation";
 dotenv.config();
 
 interface ArchivoAdjunto {
@@ -43,3 +45,25 @@ export async function enviarFormularioDocumint(
     throw error;
   }
 }
+
+class SendEmail {
+  static async sendInvitation(
+    destinatario: string,
+    name: string,
+    link: string
+  ) {
+    try {
+      const response = await resend.emails.send({
+        from: "Documint <no-reply@documint.ar>",
+        to: destinatario,
+        subject: "Activación de cuenta - Documint",
+        html: invitationTemplate(name, link),
+      });
+      return response;
+    } catch (error) {
+      throw new HttpException(500, `Error en mailService.ts: ${error}`);
+    }
+  }
+}
+
+export { SendEmail };
