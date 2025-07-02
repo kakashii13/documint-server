@@ -1,7 +1,10 @@
+import { compare } from "bcrypt";
 import { User } from "../types/types";
 import { hashPassword } from "../utils/hashPassword";
 import { HttpException } from "./httpException";
+import { InvitationService } from "./invitation";
 import { TokenService } from "./token";
+import { UserService } from "./users";
 
 class AuthService {
   static async login(user: User) {
@@ -21,20 +24,24 @@ class AuthService {
       throw new HttpException(500, `Error generado en Auth.service: ${error}`);
     }
   }
-  static async activateAccount(userId: number, password: string) {
+  static async activateAccount(token: string, password: string) {
     try {
-      // Todo: Chequear que la invitacion exista y no haya sido usada
-      // e.g const invitation = await InvitationService.getInvitationByUserId(userId);
-      // if (!invitation || invitation.used) {
-      //   throw new HttpException(400, "Invitación no válida o ya utilizada.");
-      // }
+      const invitation = await InvitationService.getInvitationByToken(token);
+
+      if (!invitation || invitation.used) {
+        throw new HttpException(400, "Invitación no válida o ya utilizada.");
+      }
       const hash_password = await hashPassword(password);
-      // Todo: Actualizar el usuario en la base de datos con el hash_password
-      // Todo: Actualizar el usuario en la base de datos con el estado de activación
-      // e.g await UserService.updateUser({userId, hash_password});
-      // Todo: Actualizar la invitacion a usada
-      // e.g await InvitationService.updateInvitation({userId, used: true});
-      // Todo: Retonar mensaje de éxito
+
+      await UserService.updateUser({
+        userId: invitation.userId,
+        hash_password,
+      });
+
+      await InvitationService.updateInvitation({
+        userId: invitation.userId,
+        used: true,
+      });
     } catch (error) {
       throw new HttpException(500, `Error generado en Auth.service: ${error}`);
     }

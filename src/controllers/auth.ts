@@ -6,7 +6,6 @@ class AuthController {
   static async login(req: RequestCustom, res: Response, next: NextFunction) {
     try {
       const user = req.user; // esto ya esta validado por el middleware de checkUser.middleware
-
       const { userData, token } = await AuthService.login(user as User);
 
       res.status(200).send({
@@ -23,7 +22,15 @@ class AuthController {
     req: RequestCustom,
     res: Response,
     next: NextFunction
-  ) {}
+  ) {
+    try {
+      const { token, password } = req.body;
+      await AuthService.activateAccount(token, password);
+      res.status(200).send({ message: "Cuenta activada correctamente" });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export { AuthController };

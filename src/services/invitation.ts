@@ -31,6 +31,41 @@ class InvitationService {
       throw new HttpException(500, `Error en invitationService.ts: ${error}`);
     }
   }
+
+  static async getInvitationByUserId(userId: number) {
+    try {
+      const invitation = await prisma.invitation.findUnique({
+        where: {
+          userId: userId,
+        },
+      });
+      return invitation;
+    } catch (error) {
+      throw new HttpException(500, `Error en invitationService.ts: ${error}`);
+    }
+  }
+
+  static async getInvitationByToken(token: string) {
+    try {
+      const invitation = await prisma.invitation.findUnique({
+        where: { token: token },
+      });
+      return invitation;
+    } catch (error) {
+      throw new HttpException(500, `Error en invitationService.ts: ${error}`);
+    }
+  }
+
+  static async updateInvitation(invitation: { userId: number; used: boolean }) {
+    try {
+      await prisma.invitation.update({
+        where: { userId: invitation.userId },
+        data: { used: invitation.used },
+      });
+    } catch (error) {
+      throw new HttpException(500, `Error en invitationService.ts: ${error}`);
+    }
+  }
 }
 
 export { InvitationService };

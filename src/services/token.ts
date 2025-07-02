@@ -11,7 +11,7 @@ class TokenService {
       });
       return token;
     } catch (error) {
-      throw new HttpException(500, "No se pudo crear el token");
+      throw new HttpException(500, `No se pudo crear el token: ${error}`);
     }
   }
 

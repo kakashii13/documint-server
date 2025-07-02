@@ -7,32 +7,65 @@ import { RequestCustom } from "../types/types";
 // TODO: agregar metodo que chequee que envia la info para crear un nuevo usuario
 
 class CheckUserMiddleware {
-  static async checkUserAndPassword(
+  static async checkIsUserExist(
     req: RequestCustom,
     res: Response,
     next: NextFunction
   ) {
     try {
-      const { data } = req.body;
+      const { dataUser } = req.body;
 
-      if (!data || !data.email || !data.password) {
+      if (!dataUser || !dataUser.email || !dataUser.password) {
         throw new HttpException(400, "Email y contraseña son requeridos");
       }
 
-      const user = await UserService.getUserByEmail(data.email);
+      const user = await UserService.getUserByEmail(dataUser.email);
 
       if (!user) {
         throw new HttpException(404, "Usuario no encontrado");
       }
 
+      req.user = user as RequestCustom["user"];
+      next();
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async checkPassword(
+    req: RequestCustom,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { dataUser } = req.body;
+      const user = req.user;
+
       const isPasswordValid =
-        (await compare(data.password, user.hash_password)) ?? false;
+        (await compare(dataUser.password, user?.hash_password || "")) ?? false;
 
       if (!isPasswordValid) {
         throw new HttpException(401, "Contraseña incorrecta");
       }
 
-      req.user = user;
+      req.user = user as RequestCustom["user"];
+      next();
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async checkIsActive(
+    req: RequestCustom,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const user = req.user;
+      if (!user?.active)
+        throw new HttpException(400, "Debe activar la cuenta primero.");
+
+      next();
     } catch (error) {
       next(error);
     }

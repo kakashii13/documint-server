@@ -10,7 +10,7 @@ model User {
   email          String   @unique
   hash_password  String
   role           String
-  active         Boolean  @default(true)
+  active         Boolean  @default(false)
 
   client         Client?  @relation(fields: [clientId], references: [id])
   advisors       Advisor[]
@@ -82,30 +82,30 @@ class UserController {
     }
   };
 
-  static updateUser = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try {
-      const { id } = req.params;
-      const { user } = req.body;
+  // // static updateUser = async (
+  //   req: Request,
+  //   res: Response,
+  //   next: NextFunction
+  // ) => {
+  //   try {
+  //     const { id } = req.params;
+  //     const { user } = req.body;
 
-      const updatedUser = await UserService.updateUser(Number(id), user);
-      if (!updatedUser) {
-        return res.status(404).send({
-          message: "Usuario no encontrado.",
-        });
-      }
+  //     const updatedUser = await UserService.updateUser(Number(id), user);
+  //     if (!updatedUser) {
+  //       return res.status(404).send({
+  //         message: "Usuario no encontrado.",
+  //       });
+  //     }
 
-      res.status(200).send({
-        message: "Usuario actualizado satisfactoriamente.",
-        user: updatedUser,
-      });
-    } catch (error) {
-      next(error);
-    }
-  };
+  //     res.status(200).send({
+  //       message: "Usuario actualizado satisfactoriamente.",
+  //       user: updatedUser,
+  //     });
+  //   } catch (error) {
+  //     next(error);
+  //   }
+  // };
   static getAllUsers = async (
     req: Request,
     res: Response,

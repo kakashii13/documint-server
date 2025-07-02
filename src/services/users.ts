@@ -46,11 +46,14 @@ class UserService {
     }
   }
 
-  static async updateUser(id: number, user: any) {
+  static async updateUser(user: { userId: number; hash_password: string }) {
     try {
       const updatedUser = await prisma.user.update({
-        where: { id },
-        data: user,
+        where: { id: user.userId },
+        data: {
+          hash_password: user.hash_password,
+          active: true,
+        },
       });
       return updatedUser;
     } catch (error) {

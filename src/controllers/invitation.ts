@@ -24,14 +24,14 @@ class InvitationController {
   ) {
     try {
       const { user } = req.body;
-      // Todo: Crear el usuario en la base de datos
+
       const userCreated = await UserService.createUser(user);
-      // Todo: Crear la invitacion en la base de datos
+
       const tokenCreated = await InvitationService.createInvitation(
         userCreated.id
       );
       const link = `${process.env.FRONTEND_URL}/activate/${tokenCreated}`;
-      // Todo: Enviar un email al usuario con la invitacion
+
       const invitationEmail = await SendEmail.sendInvitation(
         userCreated.email || "",
         userCreated.name || "Usuario Invitado",

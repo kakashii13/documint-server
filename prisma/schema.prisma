@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -15,44 +9,40 @@ datasource db {
 }
 
 model Client {
-  id     Int      @id @default(autoincrement())
-  name   String   @unique
+  id     Int     @id @default(autoincrement())
+  name   String  @unique
   email  String
-  active Boolean  @default(true)
-
+  active Boolean @default(true)
   users  User[]
 }
 
 model User {
-  id             Int      @id @default(autoincrement())
-  clientId       Int?
-  name           String
-  email          String   @unique
-  hash_password  String?
-  role           String
-  active         Boolean  @default(false)
-
-  client         Client?  @relation(fields: [clientId], references: [id])
-  advisors       Advisor[]
-  invitation     Invitation?
+  id            Int         @id @default(autoincrement())
+  clientId      Int?
+  name          String
+  email         String      @unique
+  hash_password String?
+  role          String
+  active        Boolean     @default(false)
+  advisors      Advisor[]
+  invitation    Invitation?
+  client        Client?     @relation(fields: [clientId], references: [id])
 }
 
 model Invitation {
-  id         Int      @id @default(autoincrement())
-  token      String   @unique
-  expiresAt  DateTime
-  used       Boolean  @default(false)
-  userId     Int      @unique
-  user       User     @relation(fields: [userId], references: [id])
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  userId    Int      @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Advisor {
-  id       Int    @id @default(autoincrement())
-  userId   Int
-  name     String
-  email    String
-  slug     String @unique
-
-  user     User   @relation(fields: [userId], references: [id])
+  id     Int    @id @default(autoincrement())
+  userId Int
+  name   String
+  email  String
+  slug   String @unique
+  user   User   @relation(fields: [userId], references: [id])
 }
-
