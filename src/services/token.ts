@@ -1,5 +1,5 @@
 import { HttpException } from "./httpException";
-import jwt, { verify } from "jsonwebtoken";
+import jwt, { JwtPayload, verify } from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -15,7 +15,7 @@ class TokenService {
     }
   }
 
-  static verifyToken(header: string): any {
+  static verifyToken(header: string): JwtPayload | string {
     try {
       const token: string | null = this.extractTokenFromHeader(header);
       if (!token) {

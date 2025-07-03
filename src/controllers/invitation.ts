@@ -44,7 +44,7 @@ class InvitationController {
         });
       }
     } catch (error) {
-      throw new HttpException(500, `Error en InvitationController: ${error}`);
+      next(error);
     }
   }
 }

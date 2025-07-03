@@ -17,12 +17,6 @@ class ClientController {
     try {
       const { client } = req.body;
 
-      if (!client || !client.name || !client.email) {
-        return res.status(400).send({
-          message: "Los campos 'name' y 'email' son requeridos.",
-        });
-      }
-
       const newClient = await ClientService.createClient(client);
 
       res.status(201).send({

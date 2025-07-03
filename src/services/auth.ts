@@ -11,7 +11,7 @@ class AuthService {
     try {
       const token = TokenService.createToken({
         role: user.role,
-        id: user.id,
+        userId: user.id,
       });
       const userData = {
         id: user.id,

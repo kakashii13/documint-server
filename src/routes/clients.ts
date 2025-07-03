@@ -1,28 +1,55 @@
 import express from "express";
 const router = express.Router();
 import { ClientController } from "../controllers/clients";
+import { ValidateClientMiddleware } from "../middlewares/validateClient";
+import { ValidateToken } from "../middlewares/validateToken";
+import { ValidateAuthMiddleware } from "../middlewares/validateAuth";
 
-// Todo: Implementar middleware de autenticación y autorización
-// solo el admin puede crear, actualizar y eliminar clientes
+router.post(
+  "/clients",
+  ValidateToken.validateToken,
+  ValidateAuthMiddleware.validateUserWithToken,
+  ValidateAuthMiddleware.isAdmin,
+  ValidateClientMiddleware.validateFields,
+  ClientController.createClient
+);
 
-router.post("/clients", (req, res, next) => {
-  ClientController.createClient(req, res, next);
-});
+router.get(
+  "/clients/:id",
+  ValidateToken.validateToken,
+  ValidateAuthMiddleware.validateUserWithToken,
+  ValidateAuthMiddleware.isAdmin,
+  (req, res, next) => {
+    ClientController.getClientById(req, res, next);
+  }
+);
 
-router.get("/clients/:id", (req, res, next) => {
-  ClientController.getClientById(req, res, next);
-});
+router.get(
+  "/clients",
+  ValidateToken.validateToken,
+  ValidateAuthMiddleware.validateUserWithToken,
+  ValidateAuthMiddleware.isAdmin,
+  ClientController.getAllClients
+);
 
-router.get("/clients", (req, res, next) => {
-  ClientController.getAllClients(req, res, next);
-});
+router.delete(
+  "/clients/:id",
+  ValidateToken.validateToken,
+  ValidateAuthMiddleware.validateUserWithToken,
+  ValidateAuthMiddleware.isAdmin,
+  (req, res, next) => {
+    ClientController.deleteClient(req, res, next);
+  }
+);
 
-router.delete("/clients/:id", (req, res, next) => {
-  ClientController.deleteClient(req, res, next);
-});
-
-router.put("/clients/:id", (req, res, next) => {
-  ClientController.updateClient(req, res, next);
-});
+router.put(
+  "/clients/:id",
+  ValidateToken.validateToken,
+  ValidateAuthMiddleware.validateUserWithToken,
+  ValidateAuthMiddleware.isAdmin,
+  (req, res, next) => {
+    ClientController.updateClient(req, res, next);
+  }
+);
 
 export default router;

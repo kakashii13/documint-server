@@ -1,4 +1,5 @@
 import { Request } from "express";
+import { JwtPayload } from "jsonwebtoken";
 
 interface RequestCustom extends Request {
   user?: {
@@ -10,6 +11,7 @@ interface RequestCustom extends Request {
     clientId?: number;
     active?: boolean;
   };
+  token?: string | null | JwtPayload;
 }
 
 interface User {
@@ -22,4 +24,9 @@ interface User {
   active?: boolean;
 }
 
-export { RequestCustom, User };
+interface TokenPayload {
+  userId: number;
+  role: string;
+}
+
+export { RequestCustom, User, TokenPayload };
