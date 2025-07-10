@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { ClientService } from "../services/clients";
+import { UserService } from "../services/users";
 
 /** 
  * model Client {
@@ -98,6 +99,48 @@ class ClientController {
       const clients = await ClientService.getAllClients();
 
       res.status(200).send({ clients });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getUsersByClientId(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { clientId } = req.params;
+
+      const users = await ClientService.getUsersByClientId(clientId);
+
+      if (!users) {
+        return res.status(404).send({ message: "No se encontraron usuarios." });
+      }
+
+      res.status(200).send({
+        message: "Usuarios obtenidos satisfactoriamente.",
+        users: users,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async deleteUserFromClient(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { clientId, userId } = req.params;
+
+      const deletedUser = await UserService.deleteUser(Number(userId));
+
+      res.status(200).send({
+        message: "Usuario eliminado del cliente satisfactoriamente.",
+        user: deletedUser,
+      });
     } catch (error) {
       next(error);
     }

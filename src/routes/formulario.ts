@@ -2,6 +2,7 @@ import express from "express";
 import multer from "multer";
 import formularioController from "../controllers/formulario";
 import { parseFormData } from "../middlewares/parseFormData";
+import ValidateAdvisorMiddleware from "../middlewares/validateAdvisor";
 
 const router = express.Router();
 
@@ -24,8 +25,12 @@ const upload = multer({
 
 const uploadFields = upload.fields([{ name: "adjuntos", maxCount: 10 }]);
 
-router.post("/submit", uploadFields, parseFormData, (req, res) => {
-  formularioController(req, res);
-});
+router.post(
+  "/form/:slug",
+  ValidateAdvisorMiddleware.checkSlug,
+  uploadFields,
+  parseFormData,
+  formularioController
+);
 
 export default router;

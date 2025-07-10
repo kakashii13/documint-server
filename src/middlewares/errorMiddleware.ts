@@ -8,14 +8,12 @@ export const errorManager = (
   next: NextFunction
 ) => {
   const statusCode = error.errorCode || 500;
-  const message = error.message || "Internal Server Error";
+  const message = error.message || "Internal server error";
 
-  res.status(statusCode).json({
-    status: "error",
-    statusCode,
+  console.log("From handleErrors -> ", error.message);
+
+  res.status(statusCode).send({
+    status: statusCode,
     message,
   });
-
-  console.log(error);
-  next();
 };

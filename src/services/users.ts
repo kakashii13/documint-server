@@ -1,15 +1,34 @@
+import { Prisma } from "../generated/prisma";
 import { prisma } from "../prismaClient";
+import { User } from "../types/types";
+import { generateLink } from "../utils/generateLink";
+import { hashPassword } from "../utils/hashPassword";
 import { HttpException } from "./httpException";
 
 class UserService {
-  static async createUser(user: any) {
+  static async createUser(user: User) {
     try {
+      const hash_password = await hashPassword(user.password || "");
+      console.log(user.password);
+      user.hash_password = hash_password;
       const newUser = await prisma.user.create({
-        data: user,
+        data: {
+          name: user.name,
+          email: user.email,
+          hash_password: user.hash_password,
+          role: user.role || "client",
+          clientId: user.clientId,
+          active: true,
+        },
       });
       return newUser;
-    } catch (error) {
-      throw new HttpException(500, error);
+    } catch (error: any) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === "P2002") {
+          throw new HttpException(400, "El email ya está registrado.");
+        }
+      }
+      throw new HttpException(500, "Error al crear el usuario: " + error);
     }
   }
 
@@ -20,7 +39,7 @@ class UserService {
       });
       return user;
     } catch (error) {
-      throw new HttpException(500, error);
+      throw new HttpException(500, "Error al obtener el usuario: " + error);
     }
   }
 
@@ -31,7 +50,10 @@ class UserService {
       });
       return user;
     } catch (error) {
-      throw new HttpException(500, error);
+      throw new HttpException(
+        500,
+        "Error al obtener el usuario por email: " + error
+      );
     }
   }
 
@@ -42,7 +64,7 @@ class UserService {
       });
       return user;
     } catch (error) {
-      throw new HttpException(500, error);
+      throw new HttpException(500, "Error al eliminar el usuario: " + error);
     }
   }
 
@@ -57,7 +79,7 @@ class UserService {
       });
       return updatedUser;
     } catch (error) {
-      throw new HttpException(500, error);
+      throw new HttpException(500, "Error al actualizar el usuario: " + error);
     }
   }
 
@@ -66,7 +88,24 @@ class UserService {
       const users = await prisma.user.findMany();
       return users;
     } catch (error) {
-      throw new HttpException(500, error);
+      throw new HttpException(500, "Error al obtener los usuarios: " + error);
+    }
+  }
+  static async getAdvisorsByUserId(userId: number) {
+    try {
+      const advisors = await prisma.advisor.findMany({
+        where: { userId },
+      });
+
+      advisors.map((a) => {
+        a.slug = generateLink(a.slug);
+      });
+      return advisors;
+    } catch (error) {
+      throw new HttpException(
+        500,
+        "Error al obtener los asesores por ID de usuario: " + error
+      );
     }
   }
 }

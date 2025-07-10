@@ -30,7 +30,7 @@ class InvitationController {
       const tokenCreated = await InvitationService.createInvitation(
         userCreated.id
       );
-      const link = `${process.env.FRONTEND_URL}/activate/${tokenCreated}`;
+      const link = `${process.env.FRONTEND_URL}/activate-account/${tokenCreated}`;
 
       const invitationEmail = await SendEmail.sendInvitation(
         userCreated.email || "",
@@ -39,7 +39,7 @@ class InvitationController {
       );
 
       if (invitationEmail) {
-        res.status(201).json({
+        res.status(201).send({
           message: "Invitación creada y enviada por correo electrónico.",
         });
       }

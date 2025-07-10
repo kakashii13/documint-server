@@ -5,7 +5,7 @@ import { AuthService } from "../services/auth";
 class AuthController {
   static async login(req: RequestCustom, res: Response, next: NextFunction) {
     try {
-      const user = req.user; // esto ya esta validado por el middleware de checkUser.middleware
+      const user = req.user;
       const { userData, token } = await AuthService.login(user as User);
 
       res.status(200).send({

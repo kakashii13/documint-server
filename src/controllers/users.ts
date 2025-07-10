@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { UserService } from "../services/users";
+import AdvisorsService from "../services/advisors";
 
 /**
  * 
@@ -127,6 +128,49 @@ class UserController {
       next(error);
     }
   };
+
+  static getAdvisorsByUserId = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const { userId } = req.params;
+
+      const advisors = await UserService.getAdvisorsByUserId(Number(userId));
+      if (!advisors || advisors.length === 0) {
+        return res.status(404).send({
+          message: "No se encontraron asesores para este usuario.",
+        });
+      }
+
+      res.status(200).send({
+        message: "Asesores obtenidos satisfactoriamente.",
+        advisors: advisors,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  static async deleteAdvisor(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { advisorId } = req.params;
+
+      const result = await AdvisorsService.deleteAdvisor(Number(advisorId));
+      if (!result) {
+        return res.status(404).send({
+          message: "Asesor no encontrado",
+        });
+      }
+
+      res.status(200).send({
+        message: "Asesor eliminado satisfactoriamente.",
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export { UserController };

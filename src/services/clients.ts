@@ -1,4 +1,8 @@
 import { prisma } from "../prismaClient";
+import { User } from "../types/types";
+import { hashPassword } from "../utils/hashPassword";
+import sanitizeUser from "../utils/sanitizeUser";
+import { HttpException } from "./httpException";
 
 class ClientService {
   static async createClient(client: any) {
@@ -8,8 +12,7 @@ class ClientService {
       });
       return newClient;
     } catch (error) {
-      console.error("Error creating client:", error);
-      throw new Error("Failed to create client");
+      throw new HttpException(500, "Error al crear el cliente." + error);
     }
   }
 
@@ -20,8 +23,7 @@ class ClientService {
       });
       return client;
     } catch (error) {
-      console.error("Error fetching client by ID:", error);
-      throw new Error("Failed to fetch client");
+      throw new HttpException(500, "Error al obtener el cliente." + error);
     }
   }
 
@@ -32,8 +34,7 @@ class ClientService {
       });
       return deletedClient;
     } catch (error) {
-      console.error("Error deleting client:", error);
-      throw new Error("Failed to delete client");
+      throw new HttpException(500, "Error al eliminar el cliente." + error);
     }
   }
 
@@ -45,8 +46,7 @@ class ClientService {
       });
       return updatedClient;
     } catch (error) {
-      console.error("Error updating client:", error);
-      throw new Error("Failed to update client");
+      throw new HttpException(500, "Error al actualizar el cliente." + error);
     }
   }
 
@@ -55,8 +55,21 @@ class ClientService {
       const clients = await prisma.client.findMany();
       return clients;
     } catch (error) {
-      console.error("Error fetching all clients:", error);
-      throw new Error("Failed to fetch clients");
+      throw new HttpException(500, "Error al obtener los clientes." + error);
+    }
+  }
+
+  static async getUsersByClientId(clientId: string) {
+    try {
+      const users = await prisma.user.findMany({
+        where: { clientId: Number(clientId) },
+      });
+      return users.map(sanitizeUser);
+    } catch (error) {
+      throw new HttpException(
+        500,
+        "Error al obtener los usuarios del cliente." + error
+      );
     }
   }
 }

@@ -26,7 +26,7 @@ model User {
   active        Boolean     @default(false)
   advisors      Advisor[]
   invitation    Invitation?
-  client        Client?     @relation(fields: [clientId], references: [id])
+  client        Client?     @relation(fields: [clientId], references: [id], onDelete: Cascade)
 }
 
 model Invitation {
@@ -38,11 +38,12 @@ model Invitation {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+
 model Advisor {
   id     Int    @id @default(autoincrement())
   userId Int
   name   String
-  email  String
+  email  String @unique
   slug   String @unique
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

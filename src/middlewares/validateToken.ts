@@ -16,6 +16,7 @@ class ValidateToken {
       const token = TokenService.verifyToken(
         authorizationHeader
       ) as TokenPayload;
+
       req.token = token;
       next();
     } catch (error) {

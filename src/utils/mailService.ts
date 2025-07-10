@@ -38,11 +38,9 @@ export async function enviarFormularioDocumint(
       attachments,
     });
 
-    console.log("Mensaje enviado:", response);
     return response;
   } catch (error) {
-    console.error("Error al enviar el correo:", error);
-    throw error;
+    throw new HttpException(500, `Error al enviar el correo: ${error}`);
   }
 }
 
@@ -61,7 +59,7 @@ class SendEmail {
       });
       return response;
     } catch (error) {
-      throw new HttpException(500, `Error en mailService.ts: ${error}`);
+      throw new HttpException(500, `Error al enviar el correo: ${error}`);
     }
   }
 }

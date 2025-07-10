@@ -17,11 +17,12 @@ class AuthService {
         id: user.id,
         email: user.email,
         name: user.name,
+        role: user.role,
       };
 
       return { userData, token };
     } catch (error) {
-      throw new HttpException(500, `Error generado en Auth.service: ${error}`);
+      throw new HttpException(500, "Error al iniciar sesión.");
     }
   }
   static async activateAccount(token: string, password: string) {

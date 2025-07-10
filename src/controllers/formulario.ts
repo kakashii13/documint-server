@@ -1,14 +1,23 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { generatePDF } from "../utils/generatePDF";
 import { enviarFormularioDocumint } from "../utils/mailService";
 import dotenv from "dotenv";
+import { RequestCustom } from "../types/types";
+import { UserService } from "../services/users";
+import { generateReferenceNumber } from "../utils/generateReferenceNumber";
 
 dotenv.config();
 
-const formularioController = async (req: Request, res: Response) => {
+const formularioController = async (
+  req: RequestCustom,
+  res: Response,
+  next: NextFunction
+) => {
   const datos = req.formularioData;
-
+  const advisor = req.advisor;
   try {
+    const user = await UserService.getUserById(advisor?.userId || 0);
+
     const pdfBuffer = await generatePDF(datos);
     const adjuntos = Array.isArray(req.files) // Multer can provide files as array or object
       ? []
@@ -18,22 +27,22 @@ const formularioController = async (req: Request, res: Response) => {
           ]) ||
         [];
 
-    const destinatariosRaw = process.env.MAIL_DESTINATIONS || "";
-    const destinatarios = destinatariosRaw
-      .split(",")
-      .map((email) => email.trim())
-      .filter(Boolean); // elimina entradas vacías
+    if (!user || !advisor) {
+      return next(new Error("Usuario o asesor no encontrado."));
+    }
+    const destinatarios = [user?.email, advisor?.email];
 
-    const asunto = `Formulario de ${datos.nombre} - ${datos.dni}`;
+    const referenceNumber = generateReferenceNumber();
+    const asunto = `Formulario de ${datos.nombre} - ${datos.dni} - ${referenceNumber}`;
 
     await enviarFormularioDocumint(pdfBuffer, adjuntos, destinatarios, asunto);
 
-    res.status(200).json({
-      message: "PDF generado y enviado por correo",
+    res.status(200).send({
+      message: `Formulario enviado con exito, número de referencia: ${referenceNumber}`,
     });
   } catch (err) {
-    console.error("Error al generar o enviar el PDF:", err);
-    res.status(500).json({ error: "Error al procesar el formulario" });
+    console.error("Error al enviar el formulario:", err);
+    next(err);
   }
 };
 
