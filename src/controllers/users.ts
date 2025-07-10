@@ -138,11 +138,6 @@ class UserController {
       const { userId } = req.params;
 
       const advisors = await UserService.getAdvisorsByUserId(Number(userId));
-      if (!advisors || advisors.length === 0) {
-        return res.status(404).send({
-          message: "No se encontraron asesores para este usuario.",
-        });
-      }
 
       res.status(200).send({
         message: "Asesores obtenidos satisfactoriamente.",
