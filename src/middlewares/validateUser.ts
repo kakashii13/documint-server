@@ -113,7 +113,7 @@ class ValidateUserMiddleware {
         clientId: z.number({
           required_error: "Debe proporcionar un ID de cliente.",
         }),
-        role: z.enum(["admin", "client"]).nullable().optional(),
+        role: z.enum(["admin", "client", "admin-client"]).nullable().optional(),
       }),
     });
 

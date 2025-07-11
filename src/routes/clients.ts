@@ -25,7 +25,7 @@ router.get(
 router.get(
   "/clients/:clientId/users",
   ValidateToken.validateToken,
-  ValidateAuthMiddleware.isAdmin,
+  // ValidateAuthMiddleware.isAdmin,
   ValidateClientMiddleware.validateClientId,
   (req, res, next) => {
     ClientController.getUsersByClientId(req, res, next);

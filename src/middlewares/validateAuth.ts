@@ -16,6 +16,21 @@ class ValidateAuthMiddleware {
     }
   }
 
+  static async verifyRole() {
+    return async (req: RequestCustom, res: Response, next: NextFunction) => {
+      try {
+        const token = req.token as TokenPayload;
+        if (!token.role) {
+          throw new HttpException(403, "Acceso denegado. Rol no encontrado.");
+        }
+
+        next();
+      } catch (error) {
+        next(error);
+      }
+    };
+  }
+
   static async isAdminOrClient(
     req: RequestCustom,
     res: Response,
@@ -23,7 +38,8 @@ class ValidateAuthMiddleware {
   ) {
     try {
       const token = req.token as TokenPayload;
-      if (!token.role || (token.role !== "admin" && token.role !== "client")) {
+      const roles = ["admin", "client", "admin-client"];
+      if (!token.role || !roles.includes(token.role)) {
         throw new HttpException(
           403,
           "Acceso denegado. Usuario no es admin ni cliente."

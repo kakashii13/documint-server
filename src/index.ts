@@ -10,6 +10,7 @@ import clientsRouter from "./routes/clients";
 import invitationRouter from "./routes/invitation";
 import authRouter from "./routes/auth";
 import advisorsRouter from "./routes/advisors";
+import rolesRouter from "./routes/roles";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -43,6 +44,7 @@ app.use("/", usersRouter);
 app.use("/", clientsRouter);
 app.use("/", formularioRouter);
 app.use("/", advisorsRouter);
+app.use("/", rolesRouter);
 
 app.use(errorManager);
 
