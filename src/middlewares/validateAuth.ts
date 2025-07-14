@@ -3,25 +3,16 @@ import { HttpException } from "../services/httpException";
 import { RequestCustom, TokenPayload } from "../types/types";
 
 class ValidateAuthMiddleware {
-  static async isAdmin(req: RequestCustom, res: Response, next: NextFunction) {
-    try {
-      const token = req.token as TokenPayload;
-      if (!token.role || token.role !== "admin") {
-        throw new HttpException(403, "Acceso denegado. Usuario no es admin.");
-      }
-
-      next();
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  static async verifyRole() {
+  static validateRole(validateRoles: string[]) {
     return async (req: RequestCustom, res: Response, next: NextFunction) => {
       try {
         const token = req.token as TokenPayload;
-        if (!token.role) {
-          throw new HttpException(403, "Acceso denegado. Rol no encontrado.");
+
+        if (!validateRoles.includes(token.role)) {
+          throw new HttpException(
+            403,
+            "Acceso denegado, no cuenta con los permisos suficientes."
+          );
         }
 
         next();
@@ -29,27 +20,6 @@ class ValidateAuthMiddleware {
         next(error);
       }
     };
-  }
-
-  static async isAdminOrClient(
-    req: RequestCustom,
-    res: Response,
-    next: NextFunction
-  ) {
-    try {
-      const token = req.token as TokenPayload;
-      const roles = ["admin", "client", "admin-client"];
-      if (!token.role || !roles.includes(token.role)) {
-        throw new HttpException(
-          403,
-          "Acceso denegado. Usuario no es admin ni cliente."
-        );
-      }
-
-      next();
-    } catch (error) {
-      next(error);
-    }
   }
 
   static async validateUserWithToken(

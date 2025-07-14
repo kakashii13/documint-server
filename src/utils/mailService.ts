@@ -3,6 +3,7 @@ import { Resend } from "resend";
 import dotenv from "dotenv";
 import { HttpException } from "../services/httpException";
 import { invitationTemplate } from "../templates/invitation";
+import { passwordResetTemplate } from "../templates/passwordReset";
 dotenv.config();
 
 interface ArchivoAdjunto {
@@ -58,6 +59,19 @@ class SendEmail {
         html: invitationTemplate(name, link),
       });
       return response;
+    } catch (error) {
+      throw new HttpException(500, `Error al enviar el correo: ${error}`);
+    }
+  }
+
+  static async sendResetPassword(destinatario: string, link: string) {
+    try {
+      const response = await resend.emails.send({
+        from: "Documint <no-reply@documint.ar>",
+        to: destinatario,
+        subject: "Restablecimiento de contraseña - Documint",
+        html: passwordResetTemplate(link),
+      });
     } catch (error) {
       throw new HttpException(500, `Error al enviar el correo: ${error}`);
     }

@@ -13,7 +13,7 @@ import ValidateAdvisorMiddleware from "../middlewares/validateAdvisor";
 router.post(
   "/users",
   ValidateToken.validateToken,
-  ValidateAuthMiddleware.isAdmin,
+  ValidateAuthMiddleware.validateRole(["admin"]),
   ValidateUserMiddleware.checkFieldsWithPass,
   UserController.createUser
 );
@@ -30,7 +30,7 @@ router.get(
 router.delete(
   "/users/:id",
   ValidateToken.validateToken,
-  ValidateAuthMiddleware.isAdmin,
+  ValidateAuthMiddleware.validateRole(["admin"]),
   async (req, res, next) => {
     UserController.deleteUser(req, res, next);
   }
@@ -43,7 +43,7 @@ router.delete(
 router.get(
   "/users",
   ValidateToken.validateToken,
-  ValidateAuthMiddleware.isAdmin,
+  ValidateAuthMiddleware.validateRole(["admin"]),
   async (req, res, next) => {
     UserController.getAllUsers(req, res, next);
   }
@@ -52,7 +52,7 @@ router.get(
 router.get(
   "/users/:userId/advisors",
   ValidateToken.validateToken,
-  ValidateAuthMiddleware.isAdminOrClient,
+  ValidateAuthMiddleware.validateRole(["admin", "client", "admin-client"]),
   ValidateUserMiddleware.validateUserId,
   (req, res, next) => {
     UserController.getAdvisorsByUserId(req, res, next);
@@ -62,7 +62,7 @@ router.get(
 router.delete(
   "/users/:userId/advisors/:advisorId",
   ValidateToken.validateToken,
-  ValidateAuthMiddleware.isAdminOrClient,
+  ValidateAuthMiddleware.validateRole(["admin", "client", "admin-client"]),
   ValidateUserMiddleware.validateUserId,
   ValidateAdvisorMiddleware.validateAdvisorId,
   ValidateAdvisorMiddleware.validateAdvisorOwnership,

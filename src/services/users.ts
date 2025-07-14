@@ -2,14 +2,13 @@ import { Prisma } from "../generated/prisma";
 import { prisma } from "../prismaClient";
 import { User } from "../types/types";
 import { generateLink } from "../utils/generateLink";
-import { hashPassword } from "../utils/hashPassword";
+import { hashValue } from "../utils/hashValue";
 import { HttpException } from "./httpException";
 
 class UserService {
   static async createUser(user: User) {
     try {
-      const hash_password = await hashPassword(user.password || "");
-      console.log(user.password);
+      const hash_password = await hashValue(user.password || "");
       user.hash_password = hash_password;
       const newUser = await prisma.user.create({
         data: {
@@ -18,7 +17,7 @@ class UserService {
           hash_password: user.hash_password,
           role: user.role || "client",
           clientId: user.clientId,
-          active: true,
+          active: false,
         },
       });
       return newUser;

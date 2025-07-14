@@ -9,7 +9,7 @@ import { ValidateAuthMiddleware } from "../middlewares/validateAuth";
 router.post(
   "/invitations",
   ValidateToken.validateToken,
-  ValidateAuthMiddleware.isAdmin,
+  ValidateAuthMiddleware.validateRole(["admin", "admin-client"]),
   ValidateUserMiddleware.checkFields,
   InvitationController.createInvitation
 );

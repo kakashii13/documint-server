@@ -8,7 +8,7 @@ import { ValidateAuthMiddleware } from "../middlewares/validateAuth";
 router.post(
   "/clients",
   ValidateToken.validateToken,
-  ValidateAuthMiddleware.isAdmin,
+  ValidateAuthMiddleware.validateRole(["admin"]),
   ValidateClientMiddleware.validateFields,
   ClientController.createClient
 );
@@ -16,7 +16,7 @@ router.post(
 router.get(
   "/clients/:id",
   ValidateToken.validateToken,
-  ValidateAuthMiddleware.isAdmin,
+  ValidateAuthMiddleware.validateRole(["admin"]),
   (req, res, next) => {
     ClientController.getClientById(req, res, next);
   }
@@ -25,7 +25,7 @@ router.get(
 router.get(
   "/clients/:clientId/users",
   ValidateToken.validateToken,
-  // ValidateAuthMiddleware.isAdmin,
+  ValidateAuthMiddleware.validateRole(["admin", "admin-client"]),
   ValidateClientMiddleware.validateClientId,
   (req, res, next) => {
     ClientController.getUsersByClientId(req, res, next);
@@ -35,14 +35,14 @@ router.get(
 router.get(
   "/clients",
   ValidateToken.validateToken,
-  ValidateAuthMiddleware.isAdmin,
+  ValidateAuthMiddleware.validateRole(["admin"]),
   ClientController.getAllClients
 );
 
 router.delete(
   "/clients/:id",
   ValidateToken.validateToken,
-  ValidateAuthMiddleware.isAdmin,
+  ValidateAuthMiddleware.validateRole(["admin"]),
   (req, res, next) => {
     ClientController.deleteClient(req, res, next);
   }
@@ -51,7 +51,7 @@ router.delete(
 router.delete(
   "/clients/:clientId/users/:userId",
   ValidateToken.validateToken,
-  ValidateAuthMiddleware.isAdmin,
+  ValidateAuthMiddleware.validateRole(["admin", "admin-client"]),
   (req, res, next) => {
     ClientController.deleteUserFromClient(req, res, next);
   }
@@ -60,7 +60,7 @@ router.delete(
 router.put(
   "/clients/:id",
   ValidateToken.validateToken,
-  ValidateAuthMiddleware.isAdmin,
+  ValidateAuthMiddleware.validateRole(["admin"]),
   (req, res, next) => {
     ClientController.updateClient(req, res, next);
   }

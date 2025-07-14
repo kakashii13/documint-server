@@ -83,7 +83,7 @@ class AdvisorsService {
 
   static async createSlug() {
     try {
-      const slug = nanoid(10);
+      const slug = nanoid(32);
       return slug;
     } catch (error) {
       throw new HttpException(500, "Error al crear el slug." + error);

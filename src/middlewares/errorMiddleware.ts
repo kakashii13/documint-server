@@ -1,3 +1,4 @@
+import z from "zod";
 import { HttpException } from "../services/httpException";
 import { Request, Response, NextFunction } from "express";
 
@@ -7,8 +8,15 @@ export const errorManager = (
   res: Response,
   next: NextFunction
 ) => {
+  let message = "Internal server error";
+
+  if (error instanceof z.ZodError) {
+    message = error.errors[0].message;
+  } else {
+    message = error.message;
+  }
+
   const statusCode = error.errorCode || 500;
-  const message = error.message || "Internal server error";
 
   console.log("From handleErrors -> ", error.message);
 

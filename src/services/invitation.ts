@@ -1,7 +1,7 @@
 import { HttpException } from "./httpException";
 import { prisma } from "../prismaClient";
-import { SendEmail } from "../utils/mailService";
 import dotenv from "dotenv";
+import { nanoid } from "nanoid";
 dotenv.config();
 
 class InvitationService {
@@ -25,7 +25,7 @@ class InvitationService {
 
   static async createToken() {
     try {
-      const token = Math.random().toString(36).substring(2, 15);
+      const token = nanoid(20);
       return token;
     } catch (error) {
       throw new HttpException(500, `Error en invitationService.ts: ${error}`);

@@ -1,6 +1,6 @@
 import { prisma } from "../prismaClient";
 import { User } from "../types/types";
-import { hashPassword } from "../utils/hashPassword";
+import { hashValue } from "../utils/hashValue";
 import sanitizeUser from "../utils/sanitizeUser";
 import { HttpException } from "./httpException";
 
