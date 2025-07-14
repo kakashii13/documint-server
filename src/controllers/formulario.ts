@@ -39,6 +39,7 @@ const formularioController = async (
 
     res.status(200).send({
       message: `Formulario enviado con exito, número de referencia: ${referenceNumber}`,
+      referenceNumber: referenceNumber,
     });
   } catch (err) {
     console.error("Error al enviar el formulario:", err);
