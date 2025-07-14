@@ -1,4 +1,4 @@
-import { Prisma } from "../generated/prisma";
+import { Prisma } from "@prisma/client";
 import { prisma } from "../prismaClient";
 import { User } from "../types/types";
 import { generateLink } from "../utils/generateLink";
