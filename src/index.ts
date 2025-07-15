@@ -15,18 +15,28 @@ import rolesRouter from "./routes/roles";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const allowedOrigins = process.env.ALLOWED_ORIGINS;
+// Convierte la env en array y quita espacios
+const whitelist = (process.env.ALLOWED_ORIGINS || "")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean); // elimina cadenas vacías
+
+app.use(
+  cors({
+    origin: (origin, cb) => {
+      // peticiones del mismo servidor (curl, Postman) no traen origin
+      if (!origin || whitelist.includes(origin)) return cb(null, true);
+      cb(new Error("Origin not allowed by CORS"));
+    },
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+    optionsSuccessStatus: 204, // Render usa nginx; evita 404 en OPTIONS
+  })
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(
-  cors({
-    origin: allowedOrigins,
-    methods: ["POST", "GET", "PUT", "DELETE", "PATCH"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
 app.use(helmet());
 app.use(
   rateLimit({
