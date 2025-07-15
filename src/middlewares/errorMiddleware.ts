@@ -18,7 +18,7 @@ export const errorManager = (
 
   const statusCode = error.errorCode || 500;
 
-  console.log("From handleErrors -> ", error.message);
+  console.log("From handleErrors -> ", message);
 
   res.status(statusCode).send({
     status: statusCode,
