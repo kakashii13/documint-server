@@ -29,8 +29,3 @@ export const seedAdmin = async () => {
     console.error("Error seeding admin user:", error);
   }
 };
-
-seedAdmin().catch((err) => {
-  console.error("❌ Seed admin failed:", err);
-  process.exit(1);
-});
