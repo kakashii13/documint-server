@@ -9,7 +9,7 @@
     "start": "node dist/index.js",
     "seed:admin": "node dist/config/db/seedAdmin.js",
     "postinstall": "prisma generate && prisma migrate deploy",
-    "postbuild": "copyfiles -u 1 src/assets/**/* dist/assets"
+    "postbuild": "copyfiles -u 1 src/assets/**/* dist"
   },
   "keywords": [],
   "author": "",
