@@ -1,7 +1,5 @@
 import { hashValue } from "../../utils/hashValue";
 import { prisma } from "../../prismaClient";
-import dotenv from "dotenv";
-dotenv.config();
 
 export const seedAdmin = async () => {
   const adminEmail = process.env.ADMIN_EMAIL;
