@@ -19,7 +19,7 @@ export function generatePDF(data: any): Promise<Buffer> {
   try {
     return new Promise((resolve, reject) => {
       // Leer y convertir logo a Base64
-      const logoPath = path.join(__dirname, "../../assets/logo.png");
+      const logoPath = path.join(__dirname, "../assets/logo.png");
       const logoBuffer = fs.readFileSync(logoPath);
       const logoBase64 = logoBuffer.toString("base64");
       const firmaBase64 = data?.firma;
