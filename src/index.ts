@@ -15,11 +15,11 @@ import rolesRouter from "./routes/roles";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Convierte la env en array y quita espacios
-const whitelist = (process.env.ALLOWED_ORIGINS || "")
-  .split(",")
-  .map((o) => o.trim())
-  .filter(Boolean); // elimina cadenas vacías
+const whitelist = [
+  "https://documint.ar",
+  "https://www.documint.ar", // por si Cloudflare u otra CDN agrega el www
+  "http://localhost:5173", // dev local
+];
 
 app.use(
   cors({

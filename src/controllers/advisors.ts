@@ -10,10 +10,11 @@ class AdvisorsController {
   ) {
     try {
       const { userId, name, email } = req.body;
+      const emailToLowerCase = email.toLowerCase();
       const advisorCreated = await AdvisorsService.createAdvisor(
         userId,
         name,
-        email
+        emailToLowerCase
       );
 
       res.status(201).send({

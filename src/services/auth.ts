@@ -17,6 +17,7 @@ class AuthService {
         userId: user.id,
       });
 
+      user.email = user.email.toLowerCase();
       const userData = {
         id: user.id,
         email: user.email,

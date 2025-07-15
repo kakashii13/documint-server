@@ -7,6 +7,7 @@ import { HttpException } from "./httpException";
 class ClientService {
   static async createClient(client: any) {
     try {
+      client.email = client.email.toLowerCase();
       const newClient = await prisma.client.create({
         data: client,
       });
