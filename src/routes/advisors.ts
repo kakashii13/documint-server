@@ -14,4 +14,8 @@ router.post(
   AdvisorsController.createAdvisor
 );
 
+router.get("/advisors/slug/:slug", (req, res, next) => {
+  AdvisorsController.getAdvisorBySlug(req, res, next);
+});
+
 export default router;

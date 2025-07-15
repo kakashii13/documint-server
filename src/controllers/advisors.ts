@@ -99,6 +99,37 @@ class AdvisorsController {
       next(error);
     }
   }
+
+  static async getAdvisorBySlug(
+    req: RequestCustom,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { slug } = req.params;
+      if (!slug) {
+        return res.status(400).send({
+          message: "El slug es requerido.",
+        });
+      }
+
+      const advisor = await AdvisorsService.getAdvisorBySlug(slug);
+
+      if (!advisor) {
+        return res.status(404).send({
+          message: "Asesor no encontrado.",
+        });
+      }
+
+      // por temas de seguridad, solo retorno el nombre del asesor
+      res.status(200).send({
+        message: "Asesor obtenido exitosamente.",
+        advisor: advisor.name,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default AdvisorsController;
