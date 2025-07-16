@@ -1,22 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { UserService } from "../services/users";
 import AdvisorsService from "../services/advisors";
-
-/**
- * 
-model User {
-  id             Int      @id @default(autoincrement())
-  clientId       Int?
-  name           String
-  email          String   @unique
-  hash_password  String
-  role           String
-  active         Boolean  @default(false)
-
-  client         Client?  @relation(fields: [clientId], references: [id])
-  advisors       Advisor[]
-}
- */
+import { HttpException } from "../services/httpException";
 
 class UserController {
   static createUser = async (
@@ -27,9 +12,17 @@ class UserController {
     try {
       const { user } = req.body;
       const newUser = await UserService.createUser(user);
+
+      if (!newUser) {
+        throw new HttpException(400, "Error al crear el usuario.");
+      }
+
+      // remove hash_password from the response
+      const { hash_password, ...userWithoutPassword } = newUser;
+
       res.status(201).send({
         message: "Usuario creado satisfactoriamente.",
-        user: newUser,
+        user: userWithoutPassword,
       });
     } catch (error) {
       next(error);
@@ -46,14 +39,15 @@ class UserController {
 
       const user = await UserService.getUserById(Number(id));
       if (!user) {
-        return res.status(404).send({
-          message: "Usuario no encontrado.",
-        });
+        throw new HttpException(404, "Usuario no encontrado.");
       }
+
+      // Exclude password from user object
+      const { hash_password, ...userWithoutPassword } = user;
 
       res.status(200).send({
         message: "Usuario obtenido satisfactoriamente.",
-        user: user,
+        user: userWithoutPassword,
       });
     } catch (error) {
       next(error);
@@ -69,10 +63,9 @@ class UserController {
       const { id } = req.params;
 
       const user = await UserService.deleteUser(Number(id));
+
       if (!user) {
-        return res.status(404).send({
-          message: "Usuario no encontrado.",
-        });
+        throw new HttpException(404, "Usuario no encontrado.");
       }
 
       res.status(200).send({
@@ -83,30 +76,37 @@ class UserController {
     }
   };
 
-  // // static updateUser = async (
-  //   req: Request,
-  //   res: Response,
-  //   next: NextFunction
-  // ) => {
-  //   try {
-  //     const { id } = req.params;
-  //     const { user } = req.body;
+  static async updateUser(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email, userId, name } = req.body;
 
-  //     const updatedUser = await UserService.updateUser(Number(id), user);
-  //     if (!updatedUser) {
-  //       return res.status(404).send({
-  //         message: "Usuario no encontrado.",
-  //       });
-  //     }
+      const emailExist = await UserService.getUserByEmail(email);
 
-  //     res.status(200).send({
-  //       message: "Usuario actualizado satisfactoriamente.",
-  //       user: updatedUser,
-  //     });
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  // };
+      if (emailExist && emailExist.id !== Number(userId)) {
+        throw new HttpException(400, "El email ya está registrado.");
+      }
+
+      const updatedUser = await UserService.updateUser({
+        userId: Number(userId),
+        email,
+        name,
+      });
+
+      if (!updatedUser) {
+        throw new HttpException(404, "Usuario no encontrado.");
+      }
+
+      const { hash_password, ...userWithoutPassword } = updatedUser;
+
+      res.status(200).send({
+        message: "Usuario actualizado satisfactoriamente.",
+        user: userWithoutPassword,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static getAllUsers = async (
     req: Request,
     res: Response,
@@ -120,9 +120,15 @@ class UserController {
         });
       }
 
+      // Exclude password from each user object
+      const usersWithoutPassword = users.map((user) => {
+        const { hash_password, ...userWithoutPassword } = user;
+        return userWithoutPassword;
+      });
+
       res.status(200).send({
         message: "Usuarios obtenidos satisfactoriamente.",
-        users: users,
+        users: usersWithoutPassword,
       });
     } catch (error) {
       next(error);
@@ -147,25 +153,6 @@ class UserController {
       next(error);
     }
   };
-
-  static async deleteAdvisor(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { advisorId } = req.params;
-
-      const result = await AdvisorsService.deleteAdvisor(Number(advisorId));
-      if (!result) {
-        return res.status(404).send({
-          message: "Asesor no encontrado",
-        });
-      }
-
-      res.status(200).send({
-        message: "Asesor eliminado satisfactoriamente.",
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
 }
 
 export { UserController };

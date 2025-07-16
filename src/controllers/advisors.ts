@@ -1,6 +1,7 @@
 import AdvisorsService from "../services/advisors";
 import { Request, Response, NextFunction } from "express";
 import { RequestCustom } from "../types/types";
+import { HttpException } from "../services/httpException";
 
 class AdvisorsController {
   static async createAdvisor(
@@ -66,18 +67,17 @@ class AdvisorsController {
     }
   }
 
-  static async deleteAdvisor(
-    req: RequestCustom,
-    res: Response,
-    next: NextFunction
-  ) {
+  static async deleteAdvisor(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params;
-      const advisorDeleted = await AdvisorsService.deleteAdvisor(Number(id));
+      const { advisorId } = req.params;
+
+      const result = await AdvisorsService.deleteAdvisor(Number(advisorId));
+      if (!result) {
+        throw new HttpException(404, "Asesor no encontrado.");
+      }
 
       res.status(200).send({
-        message: "Asesor eliminado exitosamente.",
-        advisor: advisorDeleted,
+        message: "Asesor eliminado satisfactoriamente.",
       });
     } catch (error) {
       next(error);

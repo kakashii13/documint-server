@@ -92,6 +92,35 @@ class ValidateUserMiddleware {
     }
   }
 
+  static validateFields(fields: string[]) {
+    return async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const schema = z.object(
+          fields.reduce((acc: any, field: any) => {
+            acc[field] = z
+              .string()
+              .min(1, { message: `${field} es requerido` });
+            return acc;
+          }, {})
+        );
+
+        const result = schema.safeParse(req.body);
+
+        if (!result.success) {
+          const errorMessage = result.error.errors
+            .map((err) => err.message)
+            .join(" ");
+          console.error(result.error);
+          return next(new HttpException(400, errorMessage));
+        }
+
+        next();
+      } catch (error) {
+        next(error);
+      }
+    };
+  }
+
   // TODO: refactorizar checkfields
   static async checkFields(req: Request, res: Response, next: NextFunction) {
     const { user } = req.body;

@@ -71,18 +71,40 @@ class UserService {
     }
   }
 
-  static async updateUser(user: { userId: number; hash_password: string }) {
+  static async updateUser(user: {
+    userId: number;
+    email: string;
+    name: string;
+  }) {
     try {
       const updatedUser = await prisma.user.update({
         where: { id: user.userId },
         data: {
-          hash_password: user.hash_password,
-          active: true,
+          email: user.email.toLowerCase(),
+          name: user.name.trim(),
         },
       });
       return updatedUser;
     } catch (error) {
       throw new HttpException(500, "Error al actualizar el usuario: " + error);
+    }
+  }
+
+  static async updatePassword(userId: number, newPassword: string) {
+    try {
+      const hash_password = await hashValue(newPassword);
+      const updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: {
+          hash_password,
+        },
+      });
+      return updatedUser;
+    } catch (error) {
+      throw new HttpException(
+        500,
+        "Error al actualizar la contraseña: " + error
+      );
     }
   }
 

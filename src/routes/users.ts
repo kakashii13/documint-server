@@ -5,8 +5,7 @@ import { ValidateUserMiddleware } from "../middlewares/validateUser";
 import { ValidateToken } from "../middlewares/validateToken";
 import { ValidateAuthMiddleware } from "../middlewares/validateAuth";
 import ValidateAdvisorMiddleware from "../middlewares/validateAdvisor";
-
-// Todo: Implementar modificacion de usuario ruta
+import AdvisorsController from "../controllers/advisors";
 
 // este endopoint se usa si no queremos enviar una invitacion de creacion de cuenta para
 // crear un usuario nuevo
@@ -36,9 +35,15 @@ router.delete(
   }
 );
 
-// router.put("/users/:id", async (req, res, next) => {
-//   UserController.updateUser(req, res, next);
-// });
+router.put(
+  "/users/:id",
+  ValidateToken.validateToken,
+  ValidateAuthMiddleware.validateOwnership,
+  ValidateUserMiddleware.validateFields(["name", "email", "userId"]),
+  (req, res, next) => {
+    UserController.updateUser(req, res, next);
+  }
+);
 
 router.get(
   "/users",
@@ -67,7 +72,7 @@ router.delete(
   ValidateAdvisorMiddleware.validateAdvisorId,
   ValidateAdvisorMiddleware.validateAdvisorOwnership,
   async (req, res, next) => {
-    UserController.deleteAdvisor(req, res, next);
+    AdvisorsController.deleteAdvisor(req, res, next);
   }
 );
 
