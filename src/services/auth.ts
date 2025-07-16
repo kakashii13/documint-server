@@ -38,12 +38,8 @@ class AuthService {
       if (!invitation || invitation.used) {
         throw new HttpException(400, "Invitación no válida o ya utilizada.");
       }
-      const hash_password = await hashValue(password);
 
-      await UserService.updateUser({
-        userId: invitation.userId,
-        hash_password,
-      });
+      await UserService.updatePassword(invitation.userId, password);
 
       await InvitationService.updateInvitation({
         userId: invitation.userId,
