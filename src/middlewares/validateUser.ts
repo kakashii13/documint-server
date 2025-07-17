@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { HttpException } from "../services/httpException";
 import { compare } from "bcrypt";
 import { UserService } from "../services/users";
-import { RequestCustom } from "../types/types";
+import { RequestCustom, TokenPayload } from "../types/types";
 import { z } from "zod";
 
 class ValidateUserMiddleware {
@@ -47,6 +47,47 @@ class ValidateUserMiddleware {
       next();
     } catch (error) {
       next(error);
+    }
+  }
+
+  static async validatePassword(
+    req: RequestCustom,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { currentPassword } = req.body;
+      const { id } = req.params; // usuario destino
+      const targetId = Number(id);
+
+      const token = req.token as TokenPayload;
+      const isAdmin = token.role === "admin";
+      const changingOwnAccount = token.userId === targetId;
+
+      /* 1. Recuperar SIEMPRE al usuario destino */
+      const user = await UserService.getUserById(targetId);
+      if (!user) throw new HttpException(404, "Usuario no encontrado");
+
+      /* 2. ¿Debe verificar contraseña actual? */
+      if (isAdmin && !changingOwnAccount) {
+        // Admin cambia la contraseña de otro: se omite la verificación
+        return next();
+      }
+
+      /* 3. Para self-service (o admin sobre su propia cuenta) */
+      if (!currentPassword) {
+        throw new HttpException(400, "La contraseña actual es requerida");
+      }
+
+      const isValid = await compare(currentPassword, user.hash_password ?? "");
+      if (!isValid) {
+        // Mensaje genérico → evita enumeración de usuarios
+        throw new HttpException(401, "Credenciales inválidas");
+      }
+
+      next();
+    } catch (err) {
+      next(err);
     }
   }
 

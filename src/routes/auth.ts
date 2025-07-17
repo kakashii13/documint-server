@@ -2,7 +2,6 @@ import express from "express";
 const router = express.Router();
 import { AuthController } from "../controllers/auth";
 import { ValidateUserMiddleware } from "../middlewares/validateUser";
-import rateLimit from "express-rate-limit";
 import { makeLimiter } from "../utils/limiters";
 
 router.post("/activate-account", AuthController.activateAccount);

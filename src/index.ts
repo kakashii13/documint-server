@@ -21,23 +21,6 @@ const whitelist = [
   "http://localhost:5173", // dev local
 ];
 
-app.use((req, _res, next) => {
-  if (req.method === "OPTIONS") {
-    console.log("--- Preflight ---");
-    console.log("Origin:", req.headers.origin);
-    console.log(
-      "Access-Control-Request-Method:",
-      req.headers["access-control-request-method"]
-    );
-    console.log(
-      "Access-Control-Request-Headers:",
-      req.headers["access-control-request-headers"]
-    );
-    console.log("─────────────────");
-  }
-  next();
-});
-
 app.use(
   cors({
     origin: (origin, cb) => {

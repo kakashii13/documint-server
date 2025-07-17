@@ -55,32 +55,15 @@ class ValidateAuthMiddleware {
     next: NextFunction
   ) {
     try {
-      // el usuario que hace la solicitud y el recurso al que se accede
-      // deben ser iguales o el usuario debe ser admin
-
-      const { userId } = req.body; // usuario que hace la solicitud
+      // token.userId vs id
       const { id } = req.params; // recurso al que se accede
       const idParam = Number(id);
       const token = req.token as TokenPayload;
 
-      if (token.role && token.role === "admin") {
-        return next(); // si es admin, no se valida propiedad
-      }
+      if (token.role && token.role === "admin") return next();
 
-      if (!userId || !id) {
-        throw new HttpException(
-          400,
-          "ID de usuario y ID de recurso son requeridos."
-        );
-      }
-
-      // el usuario que hace la solicitud debe ser el mismo que el del recurso
-      // y el token debe tener el mismo userId que el del recurso
-      if (userId !== idParam && token.userId !== idParam) {
-        throw new HttpException(
-          403,
-          "Acceso denegado. No eres el propietario."
-        );
+      if (token.userId !== idParam) {
+        throw new HttpException(403, "Acceso denegado.");
       }
       next();
     } catch (error) {

@@ -107,6 +107,28 @@ class UserController {
     }
   }
 
+  static async updatePassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const { newPassword } = req.body;
+
+      const updatedUser = await UserService.updatePassword(
+        Number(id),
+        newPassword
+      );
+
+      if (!updatedUser) {
+        throw new HttpException(400, "Credenciales inválidas.");
+      }
+
+      res.status(200).send({
+        message: "Contraseña actualizada satisfactoriamente.",
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static getAllUsers = async (
     req: Request,
     res: Response,

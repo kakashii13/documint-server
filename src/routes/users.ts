@@ -6,6 +6,7 @@ import { ValidateToken } from "../middlewares/validateToken";
 import { ValidateAuthMiddleware } from "../middlewares/validateAuth";
 import ValidateAdvisorMiddleware from "../middlewares/validateAdvisor";
 import AdvisorsController from "../controllers/advisors";
+import { makeLimiter } from "../utils/limiters";
 
 // este endopoint se usa si no queremos enviar una invitacion de creacion de cuenta para
 // crear un usuario nuevo
@@ -42,6 +43,18 @@ router.put(
   ValidateUserMiddleware.validateFields(["name", "email", "userId"]),
   (req, res, next) => {
     UserController.updateUser(req, res, next);
+  }
+);
+
+router.patch(
+  "/users/:id/password",
+  ValidateToken.validateToken,
+  makeLimiter(5, 15),
+  ValidateAuthMiddleware.validateOwnership,
+  ValidateUserMiddleware.validateFields(["currentPassword", "newPassword"]),
+  ValidateUserMiddleware.validatePassword,
+  (req, res, next) => {
+    UserController.updatePassword(req, res, next);
   }
 );
 
