@@ -21,17 +21,30 @@ const whitelist = [
   "http://localhost:5173", // dev local
 ];
 
+app.use((req, _res, next) => {
+  if (req.method === "OPTIONS") {
+    console.log("--- Preflight ---");
+    console.log("Origin:", req.headers.origin);
+    console.log(
+      "Access-Control-Request-Method:",
+      req.headers["access-control-request-method"]
+    );
+    console.log(
+      "Access-Control-Request-Headers:",
+      req.headers["access-control-request-headers"]
+    );
+    console.log("─────────────────");
+  }
+  next();
+});
+
 app.use(
   cors({
-    origin: (origin, cb) => {
-      // peticiones del mismo servidor (curl, Postman) no traen origin
-      if (!origin || whitelist.includes(origin)) return cb(null, true);
-      cb(new Error("Origin not allowed by CORS"));
-    },
+    origin: whitelist,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
-    optionsSuccessStatus: 204, // Render usa nginx; evita 404 en OPTIONS
+    optionsSuccessStatus: 204,
   })
 );
 
