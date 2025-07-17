@@ -25,42 +25,50 @@ const whitelist = [
 // }
 
 app.set("trust proxy", 1);
-app.use((req, _res, next) => {
-  if (req.method === "OPTIONS") {
-    console.log("--- Preflight ---");
-    console.log("Origin:", req.headers.origin);
-    console.log(
-      "Access-Control-Request-Method:",
-      req.headers["access-control-request-method"]
-    );
-    console.log(
-      "Access-Control-Request-Headers:",
-      req.headers["access-control-request-headers"]
-    );
-    console.log("─────────────────");
-  }
-  next();
-});
 
 app.use(
   cors({
-    origin: whitelist,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    origin: function (origin, callback) {
+      // Permitir requests sin origin (como Postman, mobile apps, etc.)
+      if (!origin) return callback(null, true);
+
+      if (whitelist.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.log("Origin blocked:", origin);
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "X-Requested-With",
+      "Accept",
+      "Origin",
+    ],
     credentials: true,
-    optionsSuccessStatus: 204,
+    optionsSuccessStatus: 200, // Cambiar a 200 para mayor compatibilidad
+    preflightContinue: false, // Asegurar que preflight se maneje completamente
   })
 );
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    crossOriginOpenerPolicy: { policy: "unsafe-none" },
+  })
+);
+
 app.use(
   rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 1000, // Limit each IP to 100 requests per windowMs
     standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
     legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+    skip: (req) => req.method === "OPTIONS", // Skip rate limiting for preflight requests
   })
 );
 
