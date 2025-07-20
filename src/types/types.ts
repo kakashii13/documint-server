@@ -34,6 +34,7 @@ interface User {
 interface TokenPayload {
   userId: number;
   role: string;
+  sessionId?: number;
 }
 
 export { RequestCustom, User, TokenPayload };

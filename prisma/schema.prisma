@@ -27,6 +27,24 @@ model User {
   password_reset_tokens PasswordResetToken[]
   invitation    Invitation?
   client        Client?     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  user_session UserSession[]
+}
+
+
+model UserSession {
+  id Int @id @default(autoincrement())
+  userId Int
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  refreshToken String
+  createdAt DateTime @default(now()) 
+  expiresAt DateTime
+  revokeAt DateTime?
+
+  ip String
+  userAgent String
+
+  @@index([userId])
 }
 
 model Invitation {

@@ -2,6 +2,9 @@ import { Request, Response, NextFunction } from "express";
 import { UserService } from "../services/users";
 import AdvisorsService from "../services/advisors";
 import { HttpException } from "../services/httpException";
+import { UserSessionService } from "../services/userSession";
+import { TokenService } from "../services/token";
+import { AuthService } from "../services/auth";
 
 class UserController {
   static createUser = async (
@@ -111,6 +114,10 @@ class UserController {
     try {
       const { id } = req.params;
       const { newPassword } = req.body;
+      const data = {
+        ipAddress: req.ip || "",
+        userAgent: req.headers["user-agent"] || "",
+      };
 
       const updatedUser = await UserService.updatePassword(
         Number(id),
@@ -121,9 +128,25 @@ class UserController {
         throw new HttpException(400, "Credenciales inválidas.");
       }
 
-      res.status(200).send({
-        message: "Contraseña actualizada satisfactoriamente.",
-      });
+      const { hash_password, ...userWithoutPassword } = updatedUser;
+
+      const { jwtToken, rawToken } = await AuthService.renewSession(
+        userWithoutPassword,
+        data
+      );
+
+      res
+        .status(200)
+        .cookie("refreshToken", rawToken, {
+          httpOnly: true,
+          secure: false, // cambiar a true en producción
+          sameSite: "lax",
+          path: "/",
+        })
+        .send({
+          message: "Contraseña actualizada satisfactoriamente.",
+          token: jwtToken,
+        });
     } catch (error) {
       next(error);
     }

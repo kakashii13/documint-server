@@ -1,23 +1,49 @@
 import { Response, NextFunction } from "express";
 import { RequestCustom, User } from "../types/types";
 import { AuthService } from "../services/auth";
-import { UserService } from "../services/users";
-import { nanoid } from "nanoid";
-import { SendEmail } from "../utils/mailService";
-import { HttpException } from "../services/httpException";
 import z from "zod";
 
 class AuthController {
   static async login(req: RequestCustom, res: Response, next: NextFunction) {
     try {
       const user = req.user;
-      const { userData, token } = await AuthService.login(user as User);
+      const data = {
+        ipAddress: req.ip || "",
+        userAgent: req.headers["user-agent"] || "",
+      };
 
-      res.status(200).send({
-        message: "Login exitoso",
-        user: userData,
-        token: token,
-      });
+      const { jwtToken, rawToken } = await AuthService.login(
+        user as User,
+        data
+      );
+      res
+        .cookie("refreshToken", rawToken, {
+          httpOnly: true,
+          secure: false, // cambiar a true en producción
+          sameSite: "lax",
+          path: "/",
+        })
+        .status(200)
+        .send({
+          message: "Login exitoso",
+          user,
+          token: jwtToken,
+        });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async refreshToken(
+    req: RequestCustom,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { refreshToken } = req.cookies;
+
+      const newToken = await AuthService.createNewAccessToken(refreshToken);
+      res.status(200).send({ token: newToken });
     } catch (error) {
       next(error);
     }

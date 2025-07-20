@@ -11,6 +11,7 @@ import invitationRouter from "./routes/invitation";
 import authRouter from "./routes/auth";
 import advisorsRouter from "./routes/advisors";
 import rolesRouter from "./routes/roles";
+import cookieParser from "cookie-parser";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -52,7 +53,7 @@ app.use(
     preflightContinue: false, // Asegurar que preflight se maneje completamente
   })
 );
-
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(

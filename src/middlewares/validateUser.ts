@@ -107,7 +107,13 @@ class ValidateUserMiddleware {
         throw new HttpException(401, "Contraseña incorrecta");
       }
 
-      req.user = user as RequestCustom["user"];
+      // Remove password from user object
+      if (!user) {
+        throw new HttpException(500, "Usuario no definido");
+      }
+      const { hash_password, ...userWithoutPassword } = user;
+
+      req.user = userWithoutPassword as RequestCustom["user"];
       next();
     } catch (error) {
       next(error);

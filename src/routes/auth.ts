@@ -15,6 +15,8 @@ router.post(
   AuthController.login
 );
 
+router.post("/refresh-token", AuthController.refreshToken);
+
 router.post(
   "/request-reset",
   makeLimiter(3, 15),
