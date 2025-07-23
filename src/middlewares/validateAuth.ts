@@ -4,8 +4,9 @@ import { RequestCustom, TokenPayload } from "../types/types";
 
 class ValidateAuthMiddleware {
   static validateRole(validateRoles: string[]) {
-    return async (req: RequestCustom, res: Response, next: NextFunction) => {
+    return async (req: Request, res: Response, next: NextFunction) => {
       try {
+        // @ts-ignore
         const token = req.token as TokenPayload;
 
         if (!validateRoles.includes(token.role)) {

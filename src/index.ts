@@ -12,6 +12,7 @@ import authRouter from "./routes/auth";
 import advisorsRouter from "./routes/advisors";
 import rolesRouter from "./routes/roles";
 import cookieParser from "cookie-parser";
+import "./config/passport";
 
 const app = express();
 const PORT = process.env.PORT || 3000;

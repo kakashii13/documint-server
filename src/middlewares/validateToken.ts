@@ -1,4 +1,4 @@
-import { Response, NextFunction } from "express";
+import { Response, NextFunction, Request } from "express";
 import { RequestCustom, TokenPayload } from "../types/types";
 import { TokenService } from "../services/token";
 import { UserSessionService } from "../services/userSession";

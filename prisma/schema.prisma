@@ -23,6 +23,7 @@ model User {
   hash_password String?
   role          String
   active        Boolean     @default(false)
+  googleId      String?     @unique
   advisors      Advisor[]
   password_reset_tokens PasswordResetToken[]
   invitation    Invitation?

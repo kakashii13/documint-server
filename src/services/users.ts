@@ -71,18 +71,18 @@ class UserService {
     }
   }
 
-  static async updateUser(user: {
-    userId: number;
-    email: string;
-    name: string;
-  }) {
+  static async updateUser(
+    userId: number,
+    data: {
+      email?: string;
+      name?: string;
+      googleId?: string;
+    }
+  ) {
     try {
       const updatedUser = await prisma.user.update({
-        where: { id: user.userId },
-        data: {
-          email: user.email.toLowerCase(),
-          name: user.name.trim(),
-        },
+        where: { id: userId },
+        data: data,
       });
       return updatedUser;
     } catch (error) {

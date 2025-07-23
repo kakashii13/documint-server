@@ -1,16 +1,14 @@
 import { Request } from "express";
 import { JwtPayload } from "jsonwebtoken";
+import { User as PrismaUser } from "@prisma/client";
+
+declare global {
+  namespace Express {
+    interface User extends PrismaUser {}
+  }
+}
 
 interface RequestCustom extends Request {
-  user?: {
-    id: number;
-    email: string;
-    name: string;
-    hash_password?: string;
-    role?: string;
-    clientId?: number;
-    active?: boolean;
-  };
   token?: string | null | JwtPayload;
   advisor?: {
     name: string;

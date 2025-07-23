@@ -89,10 +89,9 @@ class UserController {
         throw new HttpException(400, "El email ya está registrado.");
       }
 
-      const updatedUser = await UserService.updateUser({
-        userId: Number(userId),
-        email,
-        name,
+      const updatedUser = await UserService.updateUser(Number(userId), {
+        email: email.toLowerCase(),
+        name: name.trim(),
       });
 
       if (!updatedUser) {

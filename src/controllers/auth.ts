@@ -1,7 +1,8 @@
 import { Response, NextFunction } from "express";
-import { RequestCustom, User } from "../types/types";
+import { RequestCustom, TokenPayload, User } from "../types/types";
 import { AuthService } from "../services/auth";
 import z from "zod";
+import { UserService } from "../services/users";
 
 class AuthController {
   static async login(req: RequestCustom, res: Response, next: NextFunction) {
@@ -16,6 +17,14 @@ class AuthController {
         user as User,
         data
       );
+
+      // remove hash_password and googleId
+      const userWithoutPassword = {
+        ...user,
+        hash_password: undefined,
+        googleId: undefined,
+      };
+
       res
         .cookie("refreshToken", rawToken, {
           httpOnly: true,
@@ -26,9 +35,76 @@ class AuthController {
         .status(200)
         .send({
           message: "Login exitoso",
-          user,
+          user: userWithoutPassword,
           token: jwtToken,
         });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async loginWithGoogle(
+    req: RequestCustom,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const user = req.user;
+      const data = {
+        ipAddress: req.ip || "",
+        userAgent: req.headers["user-agent"] || "",
+      };
+
+      const { jwtToken, rawToken } = await AuthService.login(
+        user as User,
+        data
+      );
+
+      // remove hash_password and googleId
+      const userWithoutPassword = {
+        ...user,
+        hash_password: undefined,
+        googleId: undefined,
+      };
+
+      res
+        .cookie("refreshToken", rawToken, {
+          httpOnly: true,
+          secure: false, // cambiar a true en producción
+          sameSite: "lax",
+          path: "/",
+        })
+        .redirect(
+          `${process.env.FRONTEND_URL}/login/success?accessToken=${jwtToken}` ||
+            "/"
+        );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getProfile(
+    req: RequestCustom,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const token = req.token as TokenPayload;
+
+      const user = await UserService.getUserById(token.userId);
+
+      if (!user) {
+        return res.status(401).send({ message: "Usuario no autenticado" });
+      }
+
+      // remove hash_password and googleId
+      const userWithoutPassword = {
+        ...user,
+        hash_password: undefined,
+        googleId: undefined,
+      };
+
+      res.status(200).send({ user: userWithoutPassword });
     } catch (error) {
       next(error);
     }
