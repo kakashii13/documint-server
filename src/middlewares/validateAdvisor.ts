@@ -57,7 +57,7 @@ class ValidateAdvisorMiddleware {
     res: Response,
     next: NextFunction
   ) {
-    const { advisorId, userId } = req.params;
+    const { userId } = req.params;
     const token = req.token as TokenPayload;
     const advisor = req.advisor;
 
@@ -65,13 +65,19 @@ class ValidateAdvisorMiddleware {
       return next();
     }
 
-    if (Number(userId) !== token.userId) {
+    const parsedUserId = Number(userId);
+
+    // verify if userId from URL is a number and matches the token userId
+    // means the user is trying to access their own advisor
+    if (parsedUserId !== token.userId) {
       return next(
         new HttpException(403, "No tienes permiso para acceder a este recurso.")
       );
     }
 
-    if (advisor?.userId !== token.userId) {
+    // verify if advisorId from URL matches the advisor userId
+    // means the user is trying to access their own advisor
+    if (advisor?.userId !== parsedUserId) {
       return next(
         new HttpException(403, "No tienes permiso para acceder a este asesor.")
       );
