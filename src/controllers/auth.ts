@@ -28,7 +28,7 @@ class AuthController {
       res
         .cookie("refreshToken", rawToken, {
           httpOnly: true,
-          secure: false, // cambiar a true en producción
+          secure: true,
           sameSite: "lax",
           path: "/",
         })
@@ -70,7 +70,7 @@ class AuthController {
       res
         .cookie("refreshToken", rawToken, {
           httpOnly: true,
-          secure: false, // cambiar a true en producción
+          secure: true,
           sameSite: "lax",
           path: "/",
         })
