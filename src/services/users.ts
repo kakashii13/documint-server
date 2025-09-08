@@ -77,7 +77,7 @@ class UserService {
       email?: string;
       name?: string;
       googleId?: string;
-      active: boolean; 
+      active?: boolean; 
     }
   ) {
     try {
