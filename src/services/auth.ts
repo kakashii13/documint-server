@@ -81,6 +81,7 @@ class AuthService {
       }
 
       await UserService.updatePassword(invitation.userId, password);
+      await UserService.updateUser(invitation.userId, {active: true});
 
       await InvitationService.updateInvitation({
         userId: invitation.userId,
