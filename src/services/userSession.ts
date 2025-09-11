@@ -22,12 +22,12 @@ class UserSessionService {
       await this.removeSession(data.userId, data.ipAddress, data.userAgent);
       const existingSession = await this.getActiveSessions(data.userId);
 
-      if (existingSession.length >= 3) {
-        throw new HttpException(
-          500,
-          "Número máximo de sesiones activas alcanzado. Debe cerrar una sesión antes de iniciar una nueva."
-        );
-      }
+      // if (existingSession.length >= 3) {
+       // throw new HttpException(
+       //   500,
+       //   "Número máximo de sesiones activas alcanzado. Debe cerrar una sesión antes de iniciar una nueva."
+       // );
+      // }
 
       const session = await prisma.userSession.create({
         data: {
